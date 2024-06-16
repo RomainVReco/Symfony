@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Repository\BookRepository;
+use App\Entity\Book;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,4 +31,16 @@ class BookController extends AbstractController
         }
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
+
+    #[Route('/api/books/{id}', name:'deleteBook', methods:['DELETE'])]
+    public function deleteBook (int $id, BookRepository $bookRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $book = $bookRepository->find($id);
+        if ($book) {
+            $em->remove($book);
+            $em->flush();
+            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        }
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+    }    
 }
