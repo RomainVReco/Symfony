@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Author;
 use App\Repository\AuthorRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class AuthorController extends AbstractController
@@ -58,6 +60,18 @@ class AuthorController extends AbstractController
         $location = $urlGenerator->generate('detailAuthor', ['id' => $author->getId()], UrlGeneratorInterface::ABSOLUTE_PATH);
 
         return new JsonResponse($jsonAuthor, Response::HTTP_CREATED, ["Location" => $location], true);
+    }
+
+    #[Route('api/authors/{id}', name:"updateAuthor", methods:['PUT'])]
+    public function updateAuthor(Request $request, SerializerInterface $serializer, Author $currentAuthor, 
+    EntityManagerInterface $em): JsonResponse
+    {
+        $updatedAuthor = $serializer->deserialize($request->getContent(), Author::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE=>$currentAuthor]);
+
+        $em->persist($updatedAuthor);
+        $em->flush();
+
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
     }
 
 }

@@ -69,7 +69,7 @@ class BookController extends AbstractController
 
     #[Route('/api/books/{id}', name:"updateBook", methods:['PUT'])]
     public function updateBook(Request $request, SerializerInterface $serializer, Book $currentBook, 
-    EntityManagerInterface $em, AuthorRepository $authorRepository, UrlGeneratorInterface $urlGenerator): JsonResponse
+    EntityManagerInterface $em, AuthorRepository $authorRepository): JsonResponse
     {
         $updatedBook = $serializer->deserialize($request->getContent(), Book::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE=> $currentBook]);
 
