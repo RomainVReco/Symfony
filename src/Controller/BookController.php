@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Repository\BookRepository;
 use App\Entity\Book;
 use App\Repository\AuthorRepository;
-use Doctrine\Migrations\Configuration\Migration\Exception\JsonNotValid;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,8 +68,8 @@ class BookController extends AbstractController
     }
 
     #[Route('/api/books/{id}', name:"updateBook", methods:['PUT'])]
-    public function updateBook(int $id, Request $request, SerializerInterface $serializer, Book $currentBook, 
-    EntityManagerInterface $em, AuthorRepository $authorRepository): JsonResponse
+    public function updateBook(Request $request, SerializerInterface $serializer, Book $currentBook, 
+    EntityManagerInterface $em, AuthorRepository $authorRepository, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
         $updatedBook = $serializer->deserialize($request->getContent(), Book::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE=> $currentBook]);
 
