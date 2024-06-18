@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthorController extends AbstractController
 {
@@ -50,9 +51,19 @@ class AuthorController extends AbstractController
 
     #[Route('/api/authors', name:'createAuthor', methods:['POST'])]
     public function createAuthor (Request $request, SerializerInterface $serializer,
-    EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator):JsonResponse
+    EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator, ValidatorInterface $validator):JsonResponse
     {
         $author = $serializer->deserialize($request->getContent(), Author::class, 'json');
+
+        $errors = $validator->validate($author);
+        if ($errors->count() > 0) {
+            return new JsonResponse($serializer->serialize($errors, 'json'),
+                JsonResponse::HTTP_BAD_REQUEST, 
+                [],
+                true
+            );
+        }
+
         $em->persist($author);
         $em->flush();
 

@@ -57,7 +57,7 @@ class BookController extends AbstractController
         $book = $serializer->deserialize($request->getContent(), Book::class, 'json');
 
         $errors = $validator->validate($book);
-        if($errors->count()>0) {
+        if($errors->count() > 0) {
             return new JsonResponse($serializer->serialize($errors, 'json'), JsonResponse::HTTP_BAD_REQUEST, [], true);
         }
 
